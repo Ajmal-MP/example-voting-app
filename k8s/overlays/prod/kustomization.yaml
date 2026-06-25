@@ -10,4 +10,4 @@ images:
   newTag: "2"
 - name: voting-app
   newName: .dkr.ecr.ap-south-1.amazonaws.com/voting-app
-  newTag: "6"
+  newTag: "7"
