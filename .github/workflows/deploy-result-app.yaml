@@ -52,7 +52,7 @@ jobs:
       - name: Update Kustomize image tag
         run: |
           cd k8s/overlays/prod
-          kustomize edit set image result-app=$AWS_ACCOUNT_ID.dkr.ecr.${AWS_REGION}.amazonaws.com/result-app:${{ github.run_number }}
+          kustomize edit set image result-app=780797730272.dkr.ecr.${AWS_REGION}.amazonaws.com/result-app:${{ github.run_number }}
 
       - name: Commit changes
         run: |
