@@ -9,5 +9,5 @@ images:
   newName: 780797730272.dkr.ecr.ap-south-1.amazonaws.com/result-app
   newTag: "2"
 - name: voting-app
-  newName: .dkr.ecr.ap-south-1.amazonaws.com/voting-app
-  newTag: "7"
+  newName: 780797730272.dkr.ecr.ap-south-1.amazonaws.com/voting-app
+  newTag: "8"
