@@ -7,14 +7,15 @@ on:
     paths:
       - "vote/**"
 
-
 permissions:
   contents: write
+  security-events: write
 
 env:
   AWS_REGION: ap-south-1
   ECR_REPOSITORY: voting-app
   IMAGE_TAG: ${{ github.run_number }}
+  TRIVY_VERSION: 0.55.0
 
 jobs:
   build:
@@ -39,6 +40,21 @@ jobs:
         run: |
           docker build -f vote/Dockerfile -t $ECR_REPOSITORY:${IMAGE_TAG} vote
 
+      - name: Install Trivy
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget
+          wget https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.deb
+          sudo dpkg -i trivy_${TRIVY_VERSION}_Linux-64bit.deb
+
+      - name: Scan Docker image with Trivy
+        run: |
+          trivy image \
+            --severity HIGH,CRITICAL \
+            --exit-code 1 \
+            --no-progress \
+            $ECR_REPOSITORY:${IMAGE_TAG}
+
       - name: Tag image
         run: |
           docker tag $ECR_REPOSITORY:${IMAGE_TAG} \
@@ -60,6 +76,7 @@ jobs:
         run: |
           cd infra/k8s/overlays/prod
           kustomize edit set image voting-app=780797730272.dkr.ecr.${AWS_REGION}.amazonaws.com/voting-app:${{ github.run_number }}
+
       - name: Commit and push infra changes
         run: |
           cd infra
@@ -70,4 +87,3 @@ jobs:
           git add k8s/overlays/prod/kustomization.yaml
           git commit -m "update vote-app image tag to ${{ github.run_number }}" || echo "No changes to commit"
           git push
-
