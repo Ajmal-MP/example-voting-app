@@ -49,13 +49,22 @@ jobs:
           docker push \
           ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:${IMAGE_TAG}
 
+      - name: Checkout infra repo
+        uses: actions/checkout@v4
+        with:
+          repository: Ajmal-MP/example-vote-app-infra
+          token: ${{ secrets.INFRA_REPO_TOKEN }}
+          path: infra
+
       - name: Update Kustomize image tag
         run: |
-          cd k8s/overlays/prod
+          cd infra/k8s/overlays/prod
           kustomize edit set image result-app=780797730272.dkr.ecr.${AWS_REGION}.amazonaws.com/result-app:${{ github.run_number }}
 
-      - name: Commit changes
+      - name: Commit and push infra changes
         run: |
+          cd infra
+
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
 
