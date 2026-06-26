@@ -8,6 +8,7 @@ module "vpc" {
 
   public_subnet_tags = {
     "kubernetes.io/role/elb" = "1"
+    #to specify which subnet belongs to which security groups
     "kubernetes.io/cluster/voting-app" = "shared"
   }
 

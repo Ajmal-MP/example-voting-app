@@ -37,6 +37,15 @@ resource "aws_eks_addon" "kube_proxy" {
   addon_name   = "kube-proxy"
 }
 
+resource "aws_eks_addon" "metrics_server" {
+  cluster_name                = module.eks.cluster_name
+  addon_name                  = "metrics-server"
+  addon_version               = "v0.8.1-eksbuild.11"
+  resolve_conflicts_on_update = "PRESERVE"
+}
+
+
+
 resource "aws_security_group_rule" "bastion_to_eks" {
   type                     = "ingress"
   from_port                = 443
