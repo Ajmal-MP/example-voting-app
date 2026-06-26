@@ -49,11 +49,6 @@ jobs:
           docker push \
           ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:${IMAGE_TAG}
 
-      - name: Update Kustomize image tag
-        run: |
-          cd k8s/overlays/prod
-          kustomize edit set image voting-app=780797730272.dkr.ecr.${AWS_REGION}.amazonaws.com/voting-app:${{ github.run_number }}
-
       - name: Checkout infra repo
         uses: actions/checkout@v4
         with:
