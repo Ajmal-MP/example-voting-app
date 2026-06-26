@@ -5,8 +5,9 @@ module "eks" {
   name    = var.cluster_name
   vpc_id          = var.vpc_id
   subnet_ids      = var.private_subnets
-  kubernetes_version = "1.35"
+  kubernetes_version = "1.36"
 
+  
   enable_cluster_creator_admin_permissions = true
   endpoint_public_access  = false
   endpoint_private_access = true
@@ -46,4 +47,17 @@ resource "aws_security_group_rule" "bastion_to_eks" {
   source_security_group_id = var.bastion_sg_id
 
   description              = "Allow bastion to access EKS API"
+}
+
+
+resource "aws_security_group_rule" "node_to_node" {
+  type                     = "ingress"
+  from_port                = 0
+  to_port                  = 0
+  protocol                 = "-1"
+
+  security_group_id        = module.eks.node_security_group_id
+  source_security_group_id = module.eks.node_security_group_id
+
+  description              = "Allow all node-to-node communication"
 }
