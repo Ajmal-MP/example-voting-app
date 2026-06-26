@@ -40,21 +40,15 @@ jobs:
         run: |
           docker build -f vote/Dockerfile -t $ECR_REPOSITORY:${IMAGE_TAG} vote
 
-      - name: Install Trivy
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y wget
-          wget https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.deb
-          sudo dpkg -i trivy_${TRIVY_VERSION}_Linux-64bit.deb
-
-      - name: Scan Docker image with Trivy
-        run: |
-          trivy image \
-            --severity HIGH,CRITICAL \
-            --exit-code 1 \
-            --no-progress \
-            $ECR_REPOSITORY:${IMAGE_TAG}
-
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: '${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
       - name: Tag image
         run: |
           docker tag $ECR_REPOSITORY:${IMAGE_TAG} \
